@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using Sipl.Diagnostics;
 using Sipl.Runtime;
 using Sipl.Syntax;
+using Sipl.Visualization;
 
 namespace Sipl.Cli;
 
@@ -37,12 +38,15 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
           check        перевірити синтаксис
           run          виконати програму
           trace        виконати і показати кожен крок
+          tree         дерево виводу (-f text|json|dot|svg) або AST (--ast)
 
         Опції:
           --json             вивід у JSON (формат sipl.cli/1)
           --no-spans         parse --json: без позицій
           --set X=1 Y=2      значення вхідних змінних
           --max-steps N      ліміт кроків (за замовчуванням 100000)
+          -f, --format F     формат для tree
+          -o, --output FILE  записати результат tree у файл
           --version          версія
 
         Коди завершення: 0 — успіх, 1 — синтаксична помилка, 2 — неправильні аргументи,
@@ -59,9 +63,11 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
     {
         public string Command = "";
         public string? File;
-        public bool Json, NoSpans;
+        public bool Json, NoSpans, Ast;
         public Dictionary<string, BigInteger> Input = [];
         public int MaxSteps = Interpreter.DefaultMaxSteps;
+        public string Format = "text";
+        public string? Output;
     }
 
     private static readonly Dictionary<string, string[]> Allowed = new()
@@ -70,6 +76,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         ["check"] = ["--json"],
         ["run"] = ["--json", "--set", "--max-steps"],
         ["trace"] = ["--json", "--set", "--max-steps"],
+        ["tree"] = ["-f", "--format", "-o", "--output", "--ast"],
     };
 
     private static Options ParseArgs(IReadOnlyList<string> args)
@@ -98,6 +105,16 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
                 {
                     case "--json": o.Json = true; break;
                     case "--no-spans": o.NoSpans = true; break;
+                    case "--ast": o.Ast = true; break;
+                    case "-o" or "--output": o.Output = Value(ref i); break;
+                    case "-f" or "--format":
+                        o.Format = Value(ref i);
+                        if (!TreeRenderer.Formats.Contains(o.Format))
+                        {
+                            throw new UsageException($"невідомий формат '{o.Format}'");
+                        }
+
+                        break;
                     case "--max-steps":
                         var v = Value(ref i);
                         if (!int.TryParse(v, out o.MaxSteps) || o.MaxSteps < 1)
@@ -178,7 +195,8 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
                 "parse" => Parse(o),
                 "check" => Check(o),
                 "run" => RunProgram(o),
-                _ => Trace(o),
+                "trace" => Trace(o),
+                _ => Tree(o),
             };
         }
         catch (UsageException e)
@@ -240,7 +258,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
 
     private int Parse(Options o)
     {
-        var (res, _) = Load(o);
+        var (res, source) = Load(o);
         if (res is null)
         {
             return ExitCodes.SyntaxError;
@@ -252,7 +270,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         }
         else
         {
-            stdout.WriteLine(Json.Serialize(res.Program!.ToJson()));
+            stdout.WriteLine(TreeRenderer.ToText(VisNode.FromAst(res.Program!), source));
         }
 
         return ExitCodes.Ok;
@@ -352,5 +370,29 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         }
 
         return code;
+    }
+
+    private int Tree(Options o)
+    {
+        var (res, source) = Load(o);
+        if (res is null)
+        {
+            return ExitCodes.SyntaxError;
+        }
+
+        var name = Path.GetFileName(o.File!);
+        var root = o.Ast ? VisNode.FromAst(res.Program!) : VisNode.FromParseTree(res.Tree!);
+        var text = TreeRenderer.Render(root, source, o.Format, o.Ast ? $"AST: {name}" : $"Дерево виводу: {name}");
+
+        if (o.Output is null)
+        {
+            stdout.Write(text);
+        }
+        else
+        {
+            File.WriteAllText(o.Output, text);
+        }
+
+        return ExitCodes.Ok;
     }
 }

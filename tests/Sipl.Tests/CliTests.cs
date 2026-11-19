@@ -88,7 +88,7 @@ public class CliTests
     {
         var r = CliRunner.Run("parse", Ex("power.sipl"));
         Assert.Equal(0, r.Code);
-        Assert.Contains("\"kind\": \"Program\"", r.Out);
+        Assert.Contains("body: begin…end", r.Out);
     }
 
     [Fact]
