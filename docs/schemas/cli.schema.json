@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Вивід sipl parse|check|run|trace --json (sipl.cli/1)",
+  "type": "object",
+  "required": ["schema", "version", "command", "file", "ok", "exit_code", "diagnostics", "result"],
+  "properties": {
+    "schema": { "const": "sipl.cli/1" },
+    "version": { "type": "string" },
+    "command": { "enum": ["parse", "check", "run", "trace"] },
+    "file": { "type": ["string", "null"] },
+    "ok": { "type": "boolean" },
+    "exit_code": { "enum": [0, 1, 2, 3, 4, 5] },
+    "diagnostics": { "type": "array", "items": { "$ref": "#/$defs/diagnostic" } },
+    "result": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/parseResult" },
+        { "$ref": "#/$defs/runResult" },
+        { "$ref": "#/$defs/traceResult" }
+      ]
+    }
+  },
+  "$defs": {
+    "span": {
+      "type": "object",
+      "required": ["start", "end", "line", "column", "end_line", "end_column"],
+      "properties": {
+        "start": { "type": "integer" },
+        "end": { "type": "integer" },
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "end_line": { "type": "integer", "minimum": 1 },
+        "end_column": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["code", "severity", "message", "span", "hint", "expected"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^([ER][0-9]{3}|IO)$" },
+        "severity": { "const": "error" },
+        "message": { "type": "string" },
+        "span": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/span" }] },
+        "hint": { "type": ["string", "null"] },
+        "expected": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "state": { "type": "object", "additionalProperties": { "type": "integer" } },
+    "astNode": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["Program", "Assign", "Seq", "If", "While", "Block", "Skip",
+                   "Num", "Var", "Neg", "BinOp", "BoolConst", "Compare", "Not", "BoolOp"]
+        },
+        "id": { "type": "integer" },
+        "span": { "$ref": "#/$defs/span" }
+      }
+    },
+    "parseResult": {
+      "type": "object",
+      "required": ["ast"],
+      "properties": { "ast": { "$ref": "#/$defs/astNode" } }
+    },
+    "runResult": {
+      "type": "object",
+      "required": ["status", "state", "steps"],
+      "properties": {
+        "status": { "enum": ["ok", "runtime_error", "step_limit"] },
+        "state": { "$ref": "#/$defs/state" },
+        "steps": { "type": "integer" }
+      }
+    },
+    "traceResult": {
+      "type": "object",
+      "required": ["schema", "events", "result"],
+      "properties": {
+        "schema": { "const": "sipl.trace/1" },
+        "events": { "type": "array", "items": { "$ref": "trace-event.schema.json" } },
+        "result": { "type": "object" }
+      }
+    }
+  }
+}

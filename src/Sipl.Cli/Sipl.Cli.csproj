@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>sipl</AssemblyName>
+    <RootNamespace>Sipl.Cli</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sipl.Core\Sipl.Core.csproj" />
+  </ItemGroup>
+</Project>

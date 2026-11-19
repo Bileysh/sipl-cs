@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Подія trace (sipl.trace/1)",
+  "type": "object",
+  "required": ["seq", "type", "depth"],
+  "properties": {
+    "seq": { "type": "integer" },
+    "type": {
+      "enum": ["ProgramStarted", "BeforeStatement", "AfterStatement",
+               "ConditionEvaluated", "VariableChanged", "ProgramFinished"]
+    },
+    "depth": { "type": "integer" },
+    "node_id": { "type": "integer", "description": "id вузла AST з sipl parse --json" },
+    "kind": { "type": "string" },
+    "span": { "type": "object" },
+    "step": { "type": "integer" },
+    "statement_id": { "type": "integer" },
+    "value": { "type": "boolean" },
+    "name": { "type": "string" },
+    "old": { "type": ["integer", "null"], "description": "null — змінна ще не мала значення" },
+    "new": { "type": "integer" },
+    "state": { "type": "object", "additionalProperties": { "type": "integer" } },
+    "status": { "enum": ["ok", "runtime_error", "step_limit"] },
+    "steps": { "type": "integer" },
+    "diagnostic": { "type": ["object", "null"] }
+  }
+}
