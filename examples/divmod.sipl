@@ -1,0 +1,11 @@
+// Ділення з остачею відніманням: X = Q*Y + R, 0 <= R < Y
+// Вхід: X >= 0, Y > 0   sipl run examples/divmod.sipl --set X=17 Y=5
+begin
+  Q := 0;
+  R := X;
+  while R >= Y do
+  begin
+    R := R - Y;
+    Q := Q + 1
+  end
+end

@@ -1,0 +1,7 @@
+// НСД алгоритмом Евкліда (відніманням)
+// Вхід: A, B > 0        sipl run examples/gcd.sipl --set A=84 B=36
+while A <> B do
+  if A > B then
+    A := A - B
+  else
+    B := B - A

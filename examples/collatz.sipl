@@ -1,0 +1,10 @@
+// Кількість кроків гіпотези Коллатца до 1
+// Вхід: N >= 1          sipl run examples/collatz.sipl --set N=27
+begin
+  S := 0;
+  while N <> 1 do
+  begin
+    if N % 2 = 0 then N := N / 2 else N := 3 * N + 1;
+    S := S + 1
+  end
+end

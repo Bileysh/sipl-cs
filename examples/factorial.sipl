@@ -1,0 +1,11 @@
+// Факторіал: F = N!
+// Вхід: N >= 0          sipl run examples/factorial.sipl --set N=5
+begin
+  F := 1;
+  I := 1;
+  while I <= N do
+  begin
+    F := F * I;
+    I := I + 1
+  end
+end

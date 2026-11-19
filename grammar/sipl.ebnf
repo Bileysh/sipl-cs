@@ -1,0 +1,46 @@
+(* Граматика SIPL у EBNF. За нею написано парсер src/Sipl.Core/Syntax/Parser.cs:
+   кожне правило — окремий метод. { ... } — повторення, | — альтернатива. *)
+
+(* ---------- синтаксис ---------- *)
+
+program    = seq , EOF ;
+seq        = statement , { ";" , statement } ;
+statement  = assign | if_stmt | while_stmt | block | skip_stmt ;
+assign     = NAME , ":=" , expr ;
+if_stmt    = "if" , cond , "then" , statement , "else" , statement ;
+while_stmt = "while" , cond , "do" , statement ;
+block      = "begin" , seq , "end" ;
+skip_stmt  = "skip" ;
+
+(* арифметичні вирази; пріоритет: factor > term > expr; ліва асоціативність *)
+expr       = term , { ( "+" | "-" ) , term } ;
+term       = factor , { MUL_OP , factor } ;
+factor     = NUMBER | NAME | "(" , expr , ")" | "-" , factor ;
+
+(* умови; пріоритет: literal > conj > cond *)
+cond       = conj , { OR , conj } ;
+conj       = literal , { AND , literal } ;
+literal    = NOT , literal
+           | "true" | "false"
+           | "(" , cond , ")"
+           | expr , REL_OP , expr ;
+
+(* ---------- лексика ---------- *)
+
+NAME       = letter , { letter | digit | "_" } ;     (* крім ключових слів *)
+NUMBER     = digit , { digit } ;
+MUL_OP     = "*" | "/" | "÷" | "%" ;
+REL_OP     = "<=" | ">=" | "<>" | "!=" | "≤" | "≥" | "≠" | "<" | ">" | "=" ;
+OR         = "or" | "∨" | "||" ;
+AND        = "and" | "∧" | "&&" ;
+NOT        = "not" | "¬" | "!" ;
+letter     = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M"
+           | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+           | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m"
+           | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;
+digit      = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+(* ключові слова (зарезервовані, лише малими літерами):
+     if then else while do begin end skip true false and or not
+   пропускаються: пробіли, табуляція, переведення рядка,
+                  коментарі  "//" ... кінець рядка   та   "{" ... "}"          *)

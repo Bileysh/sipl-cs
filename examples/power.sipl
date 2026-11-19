@@ -1,0 +1,10 @@
+// Піднесення до степеня: R = X^Y  (приклад із практикуму)
+// Вхід: X, Y >= 0       sipl run examples/power.sipl --set X=2 Y=10
+begin
+ R := 1;
+ while Y > 0 do
+ begin
+  R := R * X;
+  Y := Y - 1
+ end
+end

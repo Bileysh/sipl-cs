@@ -1,0 +1,10 @@
+// Сума цифр числа (математичні символи ÷, ≠ — альтернативний запис)
+// Вхід: N >= 0          sipl run examples/digits_sum.sipl --set N=2026
+begin
+  S := 0;
+  while N ≠ 0 do
+  begin
+    S := S + N % 10;
+    N := N ÷ 10
+  end
+end
