@@ -1,0 +1,11 @@
+{
+  "description": "or строгий: невизначений операнд робить умову невизначеною",
+  "expect": {
+    "status": "runtime_error",
+    "error": {
+      "code": "R001",
+      "line": 1,
+      "column": 12
+    }
+  }
+}

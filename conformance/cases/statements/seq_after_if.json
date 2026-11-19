@@ -1,0 +1,10 @@
+{
+  "description": "';' після if завершує if",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "a": 1,
+      "b": 1
+    }
+  }
+}

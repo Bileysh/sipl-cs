@@ -1,0 +1,13 @@
+{
+  "description": "дужки в умовах",
+  "input": {
+    "x": 7
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "x": 7,
+      "r": 1
+    }
+  }
+}

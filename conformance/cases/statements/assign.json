@@ -1,0 +1,9 @@
+{
+  "description": "присвоювання константи",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "x": 7
+    }
+  }
+}

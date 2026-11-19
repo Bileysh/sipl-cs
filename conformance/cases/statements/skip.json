@@ -1,0 +1,12 @@
+{
+  "description": "skip не змінює стан",
+  "input": {
+    "z": 5
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "z": 5
+    }
+  }
+}

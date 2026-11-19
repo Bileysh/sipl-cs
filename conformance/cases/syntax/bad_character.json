@@ -1,0 +1,11 @@
+{
+  "description": "недопустимий символ",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E001",
+      "line": 1,
+      "column": 8
+    }
+  }
+}

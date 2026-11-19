@@ -1,0 +1,65 @@
+{
+  "description": "AST: пріоритет логічних операцій, канонічні імена",
+  "input": {
+    "a": 1,
+    "b": 5
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "a": 1,
+      "b": 5
+    },
+    "ast": {
+      "kind": "Program",
+      "body": {
+        "kind": "If",
+        "cond": {
+          "kind": "BoolOp",
+          "op": "or",
+          "left": {
+            "kind": "Not",
+            "operand": {
+              "kind": "Compare",
+              "op": "=",
+              "left": {
+                "kind": "Var",
+                "name": "a"
+              },
+              "right": {
+                "kind": "Num",
+                "value": 1
+              }
+            }
+          },
+          "right": {
+            "kind": "BoolOp",
+            "op": "and",
+            "left": {
+              "kind": "Compare",
+              "op": "<",
+              "left": {
+                "kind": "Var",
+                "name": "b"
+              },
+              "right": {
+                "kind": "Num",
+                "value": 2
+              }
+            },
+            "right": {
+              "kind": "BoolConst",
+              "value": true
+            }
+          }
+        },
+        "then": {
+          "kind": "Skip"
+        },
+        "orelse": {
+          "kind": "Skip"
+        }
+      }
+    }
+  }
+}

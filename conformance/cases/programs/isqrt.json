@@ -1,0 +1,13 @@
+{
+  "description": "цілий корінь",
+  "input": {
+    "n": 1000
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "n": 1000,
+      "r": 31
+    }
+  }
+}

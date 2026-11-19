@@ -1,0 +1,1 @@
+if a > b then d := a - b else d := b - a

@@ -1,0 +1,40 @@
+{
+  "description": "AST: пріоритет у дереві",
+  "input": {
+    "y": 3
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "y": 3,
+      "x": 7
+    },
+    "ast": {
+      "kind": "Program",
+      "body": {
+        "kind": "Assign",
+        "target": "x",
+        "value": {
+          "kind": "BinOp",
+          "op": "+",
+          "left": {
+            "kind": "Num",
+            "value": 1
+          },
+          "right": {
+            "kind": "BinOp",
+            "op": "*",
+            "left": {
+              "kind": "Num",
+              "value": 2
+            },
+            "right": {
+              "kind": "Var",
+              "name": "y"
+            }
+          }
+        }
+      }
+    }
+  }
+}

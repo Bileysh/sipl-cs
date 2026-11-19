@@ -1,0 +1,1 @@
+begin begin a := 1 end; begin b := 2; begin c := 3 end end end

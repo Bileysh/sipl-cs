@@ -1,0 +1,1 @@
+if a ≠ b ∧ ¬(a ≥ 1) then x := a ÷ 2 else skip

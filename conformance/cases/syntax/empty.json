@@ -1,0 +1,11 @@
+{
+  "description": "порожня програма",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E004",
+      "line": 1,
+      "column": 1
+    }
+  }
+}

@@ -1,0 +1,1 @@
+while B <> 0 do begin T := A % B; A := B; B := T end

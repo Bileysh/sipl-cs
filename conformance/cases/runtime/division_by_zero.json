@@ -1,0 +1,14 @@
+{
+  "description": "ділення на нуль",
+  "expect": {
+    "status": "runtime_error",
+    "state": {
+      "a": 5
+    },
+    "error": {
+      "code": "R002",
+      "line": 2,
+      "column": 6
+    }
+  }
+}

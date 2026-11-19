@@ -1,0 +1,11 @@
+{
+  "description": "незакрита дужка",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E003",
+      "line": 1,
+      "column": 14
+    }
+  }
+}

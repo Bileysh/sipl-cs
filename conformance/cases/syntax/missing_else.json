@@ -1,0 +1,11 @@
+{
+  "description": "if без else",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E003",
+      "line": 1,
+      "column": 21
+    }
+  }
+}

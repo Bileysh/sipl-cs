@@ -1,0 +1,10 @@
+{
+  "description": "сума 1..10",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "s": 55,
+      "i": 11
+    }
+  }
+}

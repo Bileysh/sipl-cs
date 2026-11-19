@@ -1,0 +1,9 @@
+{
+  "description": "пріоритет * / над + -",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "r": 12
+    }
+  }
+}

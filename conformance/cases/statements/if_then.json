@@ -1,0 +1,13 @@
+{
+  "description": "гілка then",
+  "input": {
+    "x": 3
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "x": 3,
+      "y": 1
+    }
+  }
+}

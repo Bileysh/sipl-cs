@@ -1,0 +1,35 @@
+{
+  "description": "AST: унарний мінус і дужки",
+  "input": {
+    "y": 2
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "y": 2,
+      "x": -3
+    },
+    "ast": {
+      "kind": "Program",
+      "body": {
+        "kind": "Assign",
+        "target": "x",
+        "value": {
+          "kind": "Neg",
+          "operand": {
+            "kind": "BinOp",
+            "op": "+",
+            "left": {
+              "kind": "Num",
+              "value": 1
+            },
+            "right": {
+              "kind": "Var",
+              "name": "y"
+            }
+          }
+        }
+      }
+    }
+  }
+}

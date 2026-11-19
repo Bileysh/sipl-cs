@@ -1,0 +1,13 @@
+{
+  "description": "кроки Коллатца для 6",
+  "input": {
+    "n": 6
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "n": 1,
+      "s": 8
+    }
+  }
+}

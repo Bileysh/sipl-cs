@@ -1,0 +1,1 @@
+a := 0; b := 1; k := 0; while k < n do begin t := a + b; a := b; b := t; k := k + 1 end

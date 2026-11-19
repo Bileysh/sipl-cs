@@ -1,0 +1,11 @@
+{
+  "description": "';' перед end",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E002",
+      "line": 3,
+      "column": 1
+    }
+  }
+}

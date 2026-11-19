@@ -1,0 +1,57 @@
+{
+  "description": "AST: while, begin/end, послідовність",
+  "input": {
+    "i": 0
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "i": 2
+    },
+    "ast": {
+      "kind": "Program",
+      "body": {
+        "kind": "While",
+        "cond": {
+          "kind": "Compare",
+          "op": "<",
+          "left": {
+            "kind": "Var",
+            "name": "i"
+          },
+          "right": {
+            "kind": "Num",
+            "value": 2
+          }
+        },
+        "body": {
+          "kind": "Block",
+          "body": {
+            "kind": "Seq",
+            "body": [
+              {
+                "kind": "Assign",
+                "target": "i",
+                "value": {
+                  "kind": "BinOp",
+                  "op": "+",
+                  "left": {
+                    "kind": "Var",
+                    "name": "i"
+                  },
+                  "right": {
+                    "kind": "Num",
+                    "value": 1
+                  }
+                }
+              },
+              {
+                "kind": "Skip"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

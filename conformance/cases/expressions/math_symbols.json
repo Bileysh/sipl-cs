@@ -1,0 +1,10 @@
+{
+  "description": "символи ÷ ≠ ¬ ≤ ≥ ∧ ∨",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "a": 4,
+      "r": 0
+    }
+  }
+}

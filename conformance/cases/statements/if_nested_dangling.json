@@ -1,0 +1,15 @@
+{
+  "description": "else відноситься до найближчого if",
+  "input": {
+    "a": 1,
+    "b": 0
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "a": 1,
+      "b": 0,
+      "r": 10
+    }
+  }
+}

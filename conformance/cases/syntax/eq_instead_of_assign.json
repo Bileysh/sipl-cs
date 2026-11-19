@@ -1,0 +1,11 @@
+{
+  "description": "= замість :=",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E002",
+      "line": 1,
+      "column": 3
+    }
+  }
+}

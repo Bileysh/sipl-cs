@@ -1,0 +1,12 @@
+{
+  "description": "порожній нескінченний цикл",
+  "max_steps": 50,
+  "expect": {
+    "status": "step_limit",
+    "error": {
+      "code": "R003",
+      "line": 1,
+      "column": 1
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "description": "читання змінної без значення",
+  "expect": {
+    "status": "runtime_error",
+    "state": {
+      "x": 1
+    },
+    "error": {
+      "code": "R001",
+      "line": 2,
+      "column": 10
+    }
+  }
+}

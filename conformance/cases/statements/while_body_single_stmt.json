@@ -1,0 +1,10 @@
+{
+  "description": "тіло while — один оператор",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "i": 3,
+      "j": 6
+    }
+  }
+}

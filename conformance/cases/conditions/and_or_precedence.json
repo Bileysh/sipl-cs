@@ -1,0 +1,9 @@
+{
+  "description": "and має пріоритет над or",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "r": 1
+    }
+  }
+}

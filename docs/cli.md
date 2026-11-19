@@ -13,6 +13,7 @@ sipl <команда> FILE [опції]
 | `run` | виконує програму, друкує кінцевий стан | `--set X=1 Y=2`, `--max-steps N`, `--json` |
 | `trace` | виконує програму й показує кожен крок | `--set`, `--max-steps`, `--json` |
 | `tree` | малює дерево виводу | `-f text\|json\|dot\|svg`, `--ast`, `--compare`, `-o FILE` |
+| `conformance` | запускає conformance-тести, див. [conformance.md](conformance.md) | `[DIR]`, `--impl "КОМАНДА"`, `-k ФІЛЬТР` |
 
 Приклади:
 

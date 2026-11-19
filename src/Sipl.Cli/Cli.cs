@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text;
 using System.Text.Json.Nodes;
+using Sipl.Conformance;
 using Sipl.Diagnostics;
 using Sipl.Runtime;
 using Sipl.Syntax;
@@ -39,6 +40,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
           run          виконати програму
           trace        виконати і показати кожен крок
           tree         дерево виводу (-f text|json|dot|svg), AST (--ast), порівняння (--compare, -f text|html)
+          conformance  [DIR] [--impl "КОМАНДА"] [-k ФІЛЬТР] — запустити conformance-тести
 
         Опції:
           --json             вивід у JSON (формат sipl.cli/1)
@@ -68,6 +70,8 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         public int MaxSteps = Interpreter.DefaultMaxSteps;
         public string Format = "text";
         public string? Output;
+        public string? Impl;
+        public string? Filter;
     }
 
     private static readonly Dictionary<string, string[]> Allowed = new()
@@ -77,6 +81,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         ["run"] = ["--json", "--set", "--max-steps"],
         ["trace"] = ["--json", "--set", "--max-steps"],
         ["tree"] = ["-f", "--format", "-o", "--output", "--ast", "--compare"],
+        ["conformance"] = ["--impl", "-k"],
     };
 
     private static Options ParseArgs(IReadOnlyList<string> args)
@@ -108,6 +113,8 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
                     case "--ast": o.Ast = true; break;
                     case "--compare": o.Compare = true; break;
                     case "-o" or "--output": o.Output = Value(ref i); break;
+                    case "--impl": o.Impl = Value(ref i); break;
+                    case "-k": o.Filter = Value(ref i); break;
                     case "-f" or "--format":
                         o.Format = Value(ref i);
                         if (!TreeRenderer.Formats.Contains(o.Format) && o.Format != "html")
@@ -150,7 +157,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
             }
         }
 
-        if (o.File is null)
+        if (o.File is null && o.Command != "conformance")
         {
             throw new UsageException("не вказано файл програми");
         }
@@ -197,7 +204,8 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
                 "check" => Check(o),
                 "run" => RunProgram(o),
                 "trace" => Trace(o),
-                _ => Tree(o),
+                "tree" => Tree(o),
+                _ => Conformance(o),
             };
         }
         catch (UsageException e)
@@ -412,5 +420,42 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         }
 
         return ExitCodes.Ok;
+    }
+
+    private int Conformance(Options o)
+    {
+        var dir = o.File ?? Path.Combine("conformance", "cases");
+        if (!Directory.Exists(dir))
+        {
+            throw new UsageException($"немає каталогу {dir}");
+        }
+
+        List<ConformanceCase> cases;
+        try
+        {
+            cases = ConformanceCase.Discover(dir, o.Filter);
+        }
+        catch (FormatException e)
+        {
+            throw new UsageException(e.Message);
+        }
+
+        ISiplImplementation impl = o.Impl is null ? new BuiltinImplementation() : new ProcessImplementation(o.Impl);
+        var passed = 0;
+        foreach (var c in cases)
+        {
+            var r = ConformanceRunner.Check(c, impl);
+            if (r.Passed)
+            {
+                passed++;
+                continue;
+            }
+
+            stdout.WriteLine($"FAIL {c.Name} ({c.Description})");
+            r.Failures.ForEach(f => stdout.WriteLine($"     {f}"));
+        }
+
+        stdout.WriteLine($"Пройдено {passed} з {cases.Count}");
+        return cases.Count > 0 && passed == cases.Count ? ExitCodes.Ok : ExitCodes.SyntaxError;
     }
 }

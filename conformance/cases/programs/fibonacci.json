@@ -1,0 +1,12 @@
+{
+  "description": "Фібоначчі 30",
+  "input": {
+    "n": 30
+  },
+  "expect": {
+    "status": "ok",
+    "state_subset": {
+      "a": 832040
+    }
+  }
+}

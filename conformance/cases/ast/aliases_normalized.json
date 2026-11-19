@@ -1,0 +1,71 @@
+{
+  "description": "AST: альтернативні символи нормалізуються",
+  "input": {
+    "a": 0,
+    "b": 1
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "a": 0,
+      "b": 1,
+      "x": 0
+    },
+    "ast": {
+      "kind": "Program",
+      "body": {
+        "kind": "If",
+        "cond": {
+          "kind": "BoolOp",
+          "op": "and",
+          "left": {
+            "kind": "Compare",
+            "op": "<>",
+            "left": {
+              "kind": "Var",
+              "name": "a"
+            },
+            "right": {
+              "kind": "Var",
+              "name": "b"
+            }
+          },
+          "right": {
+            "kind": "Not",
+            "operand": {
+              "kind": "Compare",
+              "op": ">=",
+              "left": {
+                "kind": "Var",
+                "name": "a"
+              },
+              "right": {
+                "kind": "Num",
+                "value": 1
+              }
+            }
+          }
+        },
+        "then": {
+          "kind": "Assign",
+          "target": "x",
+          "value": {
+            "kind": "BinOp",
+            "op": "/",
+            "left": {
+              "kind": "Var",
+              "name": "a"
+            },
+            "right": {
+              "kind": "Num",
+              "value": 2
+            }
+          }
+        },
+        "orelse": {
+          "kind": "Skip"
+        }
+      }
+    }
+  }
+}

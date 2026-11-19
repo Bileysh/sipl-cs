@@ -1,0 +1,13 @@
+{
+  "description": "сума цифр",
+  "input": {
+    "n": 987654321
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "n": 0,
+      "s": 45
+    }
+  }
+}

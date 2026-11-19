@@ -1,0 +1,11 @@
+{
+  "description": "пропущена ';'",
+  "expect": {
+    "status": "syntax_error",
+    "error": {
+      "code": "E002",
+      "line": 2,
+      "column": 1
+    }
+  }
+}

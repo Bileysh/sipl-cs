@@ -1,0 +1,9 @@
+{
+  "description": "not сильніше за and",
+  "expect": {
+    "status": "ok",
+    "state": {
+      "r": 0
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "description": "AST: ліва асоціативність",
+  "input": {
+    "a": 10,
+    "b": 3,
+    "c": 2
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "a": 10,
+      "b": 3,
+      "c": 2,
+      "x": 5
+    },
+    "ast": {
+      "kind": "Program",
+      "body": {
+        "kind": "Assign",
+        "target": "x",
+        "value": {
+          "kind": "BinOp",
+          "op": "-",
+          "left": {
+            "kind": "BinOp",
+            "op": "-",
+            "left": {
+              "kind": "Var",
+              "name": "a"
+            },
+            "right": {
+              "kind": "Var",
+              "name": "b"
+            }
+          },
+          "right": {
+            "kind": "Var",
+            "name": "c"
+          }
+        }
+      }
+    }
+  }
+}

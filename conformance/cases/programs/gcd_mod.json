@@ -1,0 +1,14 @@
+{
+  "description": "НСД через остачу",
+  "input": {
+    "A": 1071,
+    "B": 462
+  },
+  "expect": {
+    "status": "ok",
+    "state_subset": {
+      "A": 21,
+      "B": 0
+    }
+  }
+}

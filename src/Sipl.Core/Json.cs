@@ -33,4 +33,13 @@ public static class Json
 
     public static string Serialize(JsonNode? node, bool indented = true) =>
         node is null ? "null" : node.ToJsonString(indented ? Indented : Compact);
+
+    public static bool DeepEquals(JsonNode? a, JsonNode? b) => a switch
+    {
+        null => b is null,
+        JsonObject oa => b is JsonObject ob && oa.Count == ob.Count
+            && oa.All(kv => ob.TryGetPropertyValue(kv.Key, out var v) && DeepEquals(kv.Value, v)),
+        JsonArray aa => b is JsonArray ab && aa.Count == ab.Count && aa.Zip(ab).All(p => DeepEquals(p.First, p.Second)),
+        _ => b is JsonValue && a.ToJsonString() == b.ToJsonString(),
+    };
 }

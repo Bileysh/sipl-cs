@@ -1,0 +1,12 @@
+{
+  "description": "цикл без жодної ітерації",
+  "input": {
+    "n": 0
+  },
+  "expect": {
+    "status": "ok",
+    "state": {
+      "n": 0
+    }
+  }
+}
