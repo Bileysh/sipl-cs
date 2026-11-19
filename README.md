@@ -1,5 +1,7 @@
 # SIPL на C#
 
+[![CI](https://github.com/Bileysh/sipl-cs/actions/workflows/ci.yml/badge.svg)](https://github.com/Bileysh/sipl-cs/actions/workflows/ci.yml)
+
 Проєктна робота з «Теорії програмування»: парсер, інтерпретатор і візуалізація дерева виводу
 для мови SIPL.
 
@@ -28,6 +30,8 @@ dotnet test
 dotnet run --project src/Sipl.Cli -- run examples/power.sipl --set X=2 Y=10
 ```
 
+Готову програму для Windows, Linux і macOS (без .NET) можна завантажити зі сторінки Releases.
+
 ## Приклади
 
 ```bash
@@ -37,6 +41,7 @@ sipl check examples/errors/missing_else.sipl      # перевірити син�
 sipl parse examples/power.sipl                    # AST
 sipl tree  examples/power.sipl -f svg -o tree.svg # дерево виводу
 sipl tree  examples/power.sipl --compare -f html -o compare.html   # дерево виводу і AST поруч
+sipl conformance                                  # conformance-тести
 ```
 
 ```text
@@ -56,3 +61,28 @@ examples/errors/missing_else.sipl:4:27: error E002: неочікувана ле�
 ```
 
 Усі команди й формат JSON описано в [docs/cli.md](docs/cli.md).
+
+## Як влаштовано
+
+```text
+текст → Lexer → Parser → дерево виводу → AstBuilder → AST → Interpreter → події / результат
+```
+
+* `Sipl.Core` — бібліотека з усією логікою, `Sipl.Cli` — консольна програма, яка її викликає.
+* Парсер написаний методом рекурсивного спуску за `grammar/sipl.ebnf`.
+* Інтерпретатор видає події (початок і кінець оператора, зміна змінної, перевірка умови),
+  з них будуються trace і JSON.
+* Числа — `BigInteger`, тому переповнення немає. Нескінченні цикли зупиняються за лімітом кроків.
+
+## Тести
+
+```bash
+dotnet test
+dotnet test -p:CollectCoverage=true -p:Include="[Sipl.Core]*" -p:Threshold=80
+```
+
+## Обмеження
+
+* Парсер повідомляє лише про першу синтаксичну помилку.
+* Імена змінних — лише латиницею.
+* Ліміт кроків не доводить, що цикл нескінченний, а лише обмежує виконання.
