@@ -8,10 +8,11 @@ sipl <команда> FILE [опції]
 
 | Команда | Що робить | Опції |
 |---|---|---|
-| `parse` | розбирає програму й показує AST (JSON) | `--json`, `--no-spans` |
+| `parse` | розбирає програму й показує AST | `--json`, `--no-spans` |
 | `check` | перевіряє синтаксис | `--json` |
 | `run` | виконує програму, друкує кінцевий стан | `--set X=1 Y=2`, `--max-steps N`, `--json` |
 | `trace` | виконує програму й показує кожен крок | `--set`, `--max-steps`, `--json` |
+| `tree` | малює дерево виводу | `-f text\|json\|dot\|svg`, `--ast`, `--compare`, `-o FILE` |
 
 Приклади:
 
@@ -19,6 +20,8 @@ sipl <команда> FILE [опції]
 sipl run examples/power.sipl --set X=2 Y=10
 sipl trace examples/gcd.sipl --set A=12 B=8
 sipl run examples/power.sipl --set X=2 Y=10 --json
+sipl tree examples/power.sipl -f dot | dot -Tpng -o tree.png
+sipl tree examples/power.sipl --compare -f html -o compare.html
 ```
 
 ## Коди завершення
@@ -40,7 +43,7 @@ sipl run examples/power.sipl --set X=2 Y=10 --json
 ```json
 {
   "schema": "sipl.cli/1",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "command": "run",
   "file": "examples/power.sipl",
   "ok": true,

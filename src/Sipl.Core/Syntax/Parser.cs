@@ -3,7 +3,8 @@ using Sipl.Text;
 
 namespace Sipl.Syntax;
 
-public sealed record ParseResult(string Source, Ast.Program? Program, ParseNode? Tree, IReadOnlyList<Diagnostic> Diagnostics)
+public sealed record ParseResult(string Source, Ast.Program? Program, ParseNode? Tree, IReadOnlyList<Diagnostic> Diagnostics,
+    IReadOnlyDictionary<Ast.Node, ParseNode>? Origins = null)
 {
     public bool Ok => Program is not null;
 }
@@ -44,7 +45,8 @@ public sealed class Parser
             n.Id = id++;
         }
 
-        return new ParseResult(source, new AstBuilder(source).Build(tree), tree, []);
+        var builder = new AstBuilder(source);
+        return new ParseResult(source, builder.Build(tree), tree, [], builder.Origins);
     }
 
     public static Ast.Program Parse(string source)

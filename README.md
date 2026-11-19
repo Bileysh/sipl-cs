@@ -35,6 +35,8 @@ sipl run   examples/power.sipl --set X=2 Y=10     # виконати
 sipl trace examples/gcd.sipl --set A=12 B=8       # показати кожен крок
 sipl check examples/errors/missing_else.sipl      # перевірити синтаксис
 sipl parse examples/power.sipl                    # AST
+sipl tree  examples/power.sipl -f svg -o tree.svg # дерево виводу
+sipl tree  examples/power.sipl --compare -f html -o compare.html   # дерево виводу і AST поруч
 ```
 
 ```text

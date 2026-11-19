@@ -7,6 +7,9 @@ namespace Sipl.Syntax;
 internal sealed class AstBuilder(string source)
 {
     private readonly Text.LineIndex _index = new(source);
+    private readonly Dictionary<Node, ParseNode> _origins = new(ReferenceEqualityComparer.Instance as IEqualityComparer<Node>);
+
+    public IReadOnlyDictionary<Node, ParseNode> Origins => _origins;
 
     private static readonly Dictionary<string, string> Aliases = new()
     {
@@ -27,6 +30,7 @@ internal sealed class AstBuilder(string source)
         where T : Node
     {
         node.Span = origin.Span;
+        _origins[node] = origin;
         return node;
     }
 
@@ -76,6 +80,7 @@ internal sealed class AstBuilder(string source)
         {
             var right = Expr(ch[i + 1]);
             left = new BinOp(Op(ch[i].Text!), left, right) { Span = _index.Span(left.Span.Start, right.Span.End) };
+            _origins[left] = node;
         }
 
         return ch.Count > 1 ? From(left, node) : left;
@@ -109,6 +114,7 @@ internal sealed class AstBuilder(string source)
         {
             var right = Cond(ch[i + 1]);
             left = new BoolOp(Op(ch[i].Text!), left, right) { Span = _index.Span(left.Span.Start, right.Span.End) };
+            _origins[left] = node;
         }
 
         return ch.Count > 1 ? From(left, node) : left;

@@ -38,7 +38,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
           check        перевірити синтаксис
           run          виконати програму
           trace        виконати і показати кожен крок
-          tree         дерево виводу (-f text|json|dot|svg) або AST (--ast)
+          tree         дерево виводу (-f text|json|dot|svg), AST (--ast), порівняння (--compare, -f text|html)
 
         Опції:
           --json             вивід у JSON (формат sipl.cli/1)
@@ -63,7 +63,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
     {
         public string Command = "";
         public string? File;
-        public bool Json, NoSpans, Ast;
+        public bool Json, NoSpans, Ast, Compare;
         public Dictionary<string, BigInteger> Input = [];
         public int MaxSteps = Interpreter.DefaultMaxSteps;
         public string Format = "text";
@@ -76,7 +76,7 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         ["check"] = ["--json"],
         ["run"] = ["--json", "--set", "--max-steps"],
         ["trace"] = ["--json", "--set", "--max-steps"],
-        ["tree"] = ["-f", "--format", "-o", "--output", "--ast"],
+        ["tree"] = ["-f", "--format", "-o", "--output", "--ast", "--compare"],
     };
 
     private static Options ParseArgs(IReadOnlyList<string> args)
@@ -106,10 +106,11 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
                     case "--json": o.Json = true; break;
                     case "--no-spans": o.NoSpans = true; break;
                     case "--ast": o.Ast = true; break;
+                    case "--compare": o.Compare = true; break;
                     case "-o" or "--output": o.Output = Value(ref i); break;
                     case "-f" or "--format":
                         o.Format = Value(ref i);
-                        if (!TreeRenderer.Formats.Contains(o.Format))
+                        if (!TreeRenderer.Formats.Contains(o.Format) && o.Format != "html")
                         {
                             throw new UsageException($"невідомий формат '{o.Format}'");
                         }
@@ -381,8 +382,25 @@ public sealed class Cli(TextReader stdin, TextWriter stdout, TextWriter stderr)
         }
 
         var name = Path.GetFileName(o.File!);
-        var root = o.Ast ? VisNode.FromAst(res.Program!) : VisNode.FromParseTree(res.Tree!);
-        var text = TreeRenderer.Render(root, source, o.Format, o.Ast ? $"AST: {name}" : $"Дерево виводу: {name}");
+        string text;
+        if (o.Compare)
+        {
+            text = o.Format switch
+            {
+                "text" => TreeComparison.Build(res).ToText(),
+                "html" => TreeComparison.Build(res).ToHtml($"Дерево виводу і AST: {name}"),
+                _ => throw new UsageException("--compare підтримує лише -f text або -f html"),
+            };
+        }
+        else if (o.Format == "html")
+        {
+            throw new UsageException("формат html є лише для --compare");
+        }
+        else
+        {
+            var root = o.Ast ? VisNode.FromAst(res.Program!) : VisNode.FromParseTree(res.Tree!);
+            text = TreeRenderer.Render(root, source, o.Format, o.Ast ? $"AST: {name}" : $"Дерево виводу: {name}");
+        }
 
         if (o.Output is null)
         {

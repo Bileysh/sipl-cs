@@ -88,6 +88,48 @@ public class VisualizationTests
         Assert.Contains("[label=\"left\"]", TreeRenderer.ToDot(VisNode.FromAst(Parser.Parse(Src)), Src, "t"));
     }
 
+    [Fact]
+    public void EveryParseNodeMapsToAstNode()
+    {
+        var cmp = TreeComparison.Build(Src);
+        Assert.All(cmp.Tree.Walk(), p => Assert.True(cmp.ParseToAst.ContainsKey(p.Id), p.Symbol));
+    }
+
+    [Fact]
+    public void ChainCollapsesIntoOneNode()
+    {
+        var cmp = TreeComparison.Build("x := 7");
+        var num = cmp.Program.Walk().OfType<Ast.Num>().Single();
+        Assert.Equal(["expr", "term", "factor", "NUMBER"], cmp.ParseNodesOf(num.Id).Select(p => p.Symbol));
+    }
+
+    [Fact]
+    public void ParenthesesBelongToTheirExpression()
+    {
+        var cmp = TreeComparison.Build("x := (a + 1) * 2");
+        var plus = cmp.Program.Walk().OfType<Ast.BinOp>().Single(b => b.Op == "+");
+        Assert.Equal(["(", "+", ")"], cmp.ParseNodesOf(plus.Id).Where(p => p.IsTerminal).Select(p => p.Text));
+    }
+
+    [Fact]
+    public void ComparisonText()
+    {
+        var text = TreeComparison.Build(Src).ToText();
+        Assert.Contains("expr ▸ term ▸ factor ▸ NUMBER", text);
+        Assert.Contains("statement ▸ assign  + 'R' ':='", text);
+    }
+
+    [Fact]
+    public void ComparisonHtml()
+    {
+        var html = TreeComparison.Build("x := 1 { </script> }").ToHtml("t");
+        Assert.Equal(2, Regex.Matches(html, "<svg ").Count);
+        Assert.Contains("id=\"p0\"", html);
+        Assert.Contains("id=\"a0\"", html);
+        Assert.Contains("const P2A", html);
+        Assert.DoesNotContain("</script> }", html);
+    }
+
     [Theory]
     [InlineData("text")]
     [InlineData("json")]
@@ -99,10 +141,11 @@ public class VisualizationTests
     [Fact]
     public void TreeCommandOptions()
     {
-        var file = Path.Combine(Path.GetTempPath(), $"sipl-{Guid.NewGuid():N}.svg");
-        Assert.Equal(0, CliRunner.Run("tree", TestPaths.Example("power.sipl"), "-f", "svg", "-o", file).Code);
-        Assert.StartsWith("<svg", File.ReadAllText(file));
+        var file = Path.Combine(Path.GetTempPath(), $"sipl-{Guid.NewGuid():N}.html");
+        Assert.Equal(0, CliRunner.Run("tree", TestPaths.Example("power.sipl"), "--compare", "-f", "html", "-o", file).Code);
+        Assert.StartsWith("<!DOCTYPE html>", File.ReadAllText(file));
         Assert.Contains("value: 1", CliRunner.Run("tree", TestPaths.Example("power.sipl"), "--ast").Out);
+        Assert.Contains("Вузлів у дереві виводу", CliRunner.Run("tree", TestPaths.Example("power.sipl"), "--compare").Out);
         Assert.Equal(ExitCodes.Usage, CliRunner.Run("tree", TestPaths.Example("power.sipl"), "-f", "html").Code);
         Assert.Equal(ExitCodes.Usage, CliRunner.Run("tree", TestPaths.Example("power.sipl"), "--compare", "-f", "svg").Code);
         Assert.Equal(ExitCodes.SyntaxError, CliRunner.Run("tree", TestPaths.Example("errors/missing_else.sipl")).Code);
