@@ -2,6 +2,13 @@
 
 Версії за [SemVer](https://semver.org/lang/uk/). Версії 0.1–0.4 — етапи з roadmap курсу.
 
+## [0.5.0] — 2026-11-19
+
+### Додано
+- Conformance-тести (56 програм) і команда `sipl conformance`.
+- CI на GitHub Actions: форматування, збірка, тести на Windows, Linux і macOS, покриття.
+- Релізи на GitHub зі зібраною програмою.
+
 ## [0.4.0] — 2026-11-19
 
 ### Додано
