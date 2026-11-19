@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - { rid: win-x64, os: windows-latest }
+          - { rid: linux-x64, os: ubuntu-latest }
+          - { rid: osx-arm64, os: macos-latest }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Версія в тезі має збігатися з версією проєкту
+        shell: bash
+        run: |
+          VERSION=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props)
+          test "v$VERSION" = "$GITHUB_REF_NAME"
+
+      - run: dotnet test -c Release
+
+      - name: Збірка програми
+        shell: bash
+        run: |
+          dotnet publish src/Sipl.Cli -c Release -r ${{ matrix.rid }} --self-contained -p:PublishSingleFile=true -o sipl-${{ matrix.rid }}
+          cp -r examples README.md sipl-${{ matrix.rid }}/
+          if [ "${{ matrix.rid }}" = "win-x64" ]; then 7z a sipl-${{ matrix.rid }}.zip sipl-${{ matrix.rid }}; else tar czf sipl-${{ matrix.rid }}.tar.gz sipl-${{ matrix.rid }}; fi
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: sipl-${{ matrix.rid }}
+          path: sipl-${{ matrix.rid }}.*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Створити реліз з описом змін із CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bash scripts/release-notes.sh "${GITHUB_REF_NAME#v}" > notes.md
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md dist/*
