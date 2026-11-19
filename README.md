@@ -25,4 +25,32 @@
 ```bash
 dotnet build
 dotnet test
+dotnet run --project src/Sipl.Cli -- run examples/power.sipl --set X=2 Y=10
 ```
+
+## Приклади
+
+```bash
+sipl run   examples/power.sipl --set X=2 Y=10     # виконати
+sipl trace examples/gcd.sipl --set A=12 B=8       # показати кожен крок
+sipl check examples/errors/missing_else.sipl      # перевірити синтаксис
+sipl parse examples/power.sipl                    # AST
+```
+
+```text
+$ sipl run examples/power.sipl --set X=2 Y=10
+Готово, кроків: 54. Кінцевий стан:
+  X = 2
+  Y = 0
+  R = 1024
+```
+
+```text
+$ sipl check examples/errors/missing_else.sipl
+examples/errors/missing_else.sipl:4:27: error E002: неочікувана лексема ';'; очікувалось: '*', '/', '%', '+', '-', 'else'
+     4 |   if x > 0 then x := x - 1;
+       |                           ^
+  підказка: у SIPL if обов'язково має else (якщо нічого не треба: else skip)
+```
+
+Усі команди й формат JSON описано в [docs/cli.md](docs/cli.md).
